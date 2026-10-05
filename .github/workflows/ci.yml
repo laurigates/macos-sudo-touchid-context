@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install just and shellcheck
+        run: brew install just shellcheck
+      - name: Lint
+        run: just lint
+      - name: Build and test
+        run: just test

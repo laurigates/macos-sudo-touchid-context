@@ -24,6 +24,11 @@ test: build
 try-dialog: build
     build/harness -E -- /usr/sbin/installer -pkg /opt/homebrew/Caskroom/example/1.0/example.pkg -target /
 
+# Regenerate docs/images/dialog.png (shows a dialog; wait for the capture before touching)
+screenshot: build
+    swiftc -O -o build/windows scripts/windows.swift
+    scripts/screenshot.sh
+
 # Install the module and switch /etc/pam.d/sudo_local to it (keep a root shell open)
 install: build
     scripts/install.sh

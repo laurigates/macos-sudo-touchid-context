@@ -8,11 +8,13 @@ authenticate". When a background job (a `brew upgrade` installing a cask `.pkg`,
 launchd script) triggers it, the dialog gives no way to tell what you are
 approving. With this module it reads:
 
-```
-sudo is trying to run: /usr/sbin/installer -pkg /opt/homebrew/Caskroom/zoom/6.4.0/zoom.pkg -target /
-— requested by: brew.rb upgrade --cask zoom.
-Touch ID or enter your password to allow this.
-```
+<p align="center">
+  <img src="docs/images/dialog.png" width="320"
+       alt="Touch ID dialog titled sudo: 'sudo is trying to run: /usr/sbin/installer -pkg /opt/homebrew/Caskroom/zoom/6.4.0/zoomusInstallerFull.pkg -target / — requested by: brew.rb upgrade --cask zoom. Touch ID or enter your password to allow this.' with Use Password and Cancel buttons">
+</p>
+
+The screenshot comes from `just screenshot`, which runs the module through the
+test harness with the argv and parent process brew gives sudo.
 
 Inline shell wrappers are skipped when naming the requester, so a job started via
 `zsh -c '…'` shows as `claude (via zsh -c)` rather than the shell's command line.
@@ -20,9 +22,9 @@ Inline shell wrappers are skipped when naming the requester, so a job started vi
 ## Status
 
 Working on macOS 26.6 (Apple silicon) for sudo: Touch ID approval, and cancel
-falling back to the terminal password prompt, are tested. The brew example above
-follows from brew's process shape and the tested requester rules; a live cask
-upgrade has not been observed yet. Small and young; read
+falling back to the terminal password prompt, are tested. The screenshot uses
+brew's process shape; a live cask upgrade has not been observed yet
+([#1](https://github.com/laurigates/macos-sudo-touchid-context/issues/1)). Small and young; read
 [`docs/how-it-works.md`](docs/how-it-works.md) before installing.
 
 ## Requirements
@@ -86,6 +88,7 @@ module file. Deleting the file first would lock sudo.
 | Recipe | Does |
 |---|---|
 | `just status` | Active `sudo_local` lines; installed vs built module hash |
+| `just screenshot` | Regenerates `docs/images/dialog.png` (shows a dialog; wait for the capture message before touching) |
 | `just logs [minutes]` | The module's unified-log lines (uses `/usr/bin/log`; in zsh, `log` is a builtin) |
 | `just lint` | shellcheck the scripts |
 

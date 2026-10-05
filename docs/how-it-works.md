@@ -24,7 +24,14 @@ those tags is an assumption; the probe results below are consistent with it.
   (lines 150–161). The environment is where a caller would put custom prompt
   text. The dialog is built from the calling process name (`sudo`) and the
   right's definition, which on a stock system has no `default-prompt`
-  (`security authorizationdb read com.apple.security.sudo`).
+  (`security authorizationdb read com.apple.security.sudo`). On macOS 26.6 it
+  reads "sudo is trying to execute a command as administrator."
+- The right's rule is `entitled` and `authenticate-session-owner` (`k-of-n` 2, so
+  both must pass). A process without sudo's entitlement is refused without UI.
+  Loading `pam_tid.so.2` into the test harness (copied as `sudo`) showed no
+  dialog, and authd logged `Failed to authorize right 'com.apple.security.sudo'
+  by client '…/sudo'`. That is why `just screenshot stock` needs real
+  `/usr/bin/sudo` with `pam_tid.so` active.
 - In `sudo -A` (askpass) mode it returns `PAM_AUTHINFO_UNAVAIL` without UI
   (lines 102–108), so sudo falls through to the password via the askpass helper.
 

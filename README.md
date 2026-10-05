@@ -4,17 +4,26 @@ A Touch ID PAM module for macOS `sudo` whose dialog says what is being authorize
 and which process asked.
 
 Apple's `pam_tid.so` shows the same dialog for every request: "sudo is trying to
-authenticate". When a background job (a `brew upgrade` installing a cask `.pkg`, a
-launchd script) triggers it, the dialog gives no way to tell what you are
-approving. With this module it reads:
+execute a command as administrator." When a background job (a `brew upgrade`
+installing a cask `.pkg`, a launchd script) triggers it, the dialog gives no way
+to tell what you are approving.
 
-<p align="center">
-  <img src="docs/images/dialog.png" width="320"
-       alt="Touch ID dialog titled sudo: 'sudo is trying to run: /usr/sbin/installer -pkg /opt/homebrew/Caskroom/zoom/6.4.0/zoomusInstallerFull.pkg -target / — requested by: brew.rb upgrade --cask zoom. Touch ID or enter your password to allow this.' with Use Password and Cancel buttons">
-</p>
+<table>
+  <tr>
+    <th>Apple's <code>pam_tid.so</code></th>
+    <th>This module</th>
+  </tr>
+  <tr>
+    <td valign="top"><img src="docs/images/dialog-stock.png" width="320"
+         alt="Touch ID dialog titled sudo: 'sudo is trying to execute a command as administrator. Touch ID or enter your password to allow this.' with Use Password and Cancel buttons"></td>
+    <td valign="top"><img src="docs/images/dialog.png" width="320"
+         alt="Touch ID dialog titled sudo: 'sudo is trying to run: /usr/sbin/installer -pkg /opt/homebrew/Caskroom/zoom/6.4.0/zoomusInstallerFull.pkg -target / — requested by: brew.rb upgrade --cask zoom. Touch ID or enter your password to allow this.' with Use Password and Cancel buttons"></td>
+  </tr>
+</table>
 
-The screenshot comes from `just screenshot`, which runs the module through the
-test harness with the argv and parent process brew gives sudo.
+Both are captured with `just screenshot`. Apple's dialog comes from real
+`/usr/bin/sudo` (it reads the same for every command). This module's runs through
+the test harness with the argv and parent process brew gives sudo.
 
 Inline shell wrappers are skipped when naming the requester, so a job started via
 `zsh -c '…'` shows as `claude (via zsh -c)` rather than the shell's command line.
@@ -88,7 +97,7 @@ module file. Deleting the file first would lock sudo.
 | Recipe | Does |
 |---|---|
 | `just status` | Active `sudo_local` lines; installed vs built module hash |
-| `just screenshot` | Regenerates `docs/images/dialog.png` (shows a dialog; wait for the capture message before touching) |
+| `just screenshot [stock]` | Regenerates `docs/images/dialog.png`, or `dialog-stock.png` with `stock` (needs `pam_tid.so` as the active `sudo_local` line). Shows a dialog; wait for the capture message before touching |
 | `just logs [minutes]` | The module's unified-log lines (uses `/usr/bin/log`; in zsh, `log` is a builtin) |
 | `just lint` | shellcheck the scripts |
 
